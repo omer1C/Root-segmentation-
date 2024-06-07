@@ -9,9 +9,9 @@ image_list = ['arb_bicubic_x2', 'arb_bicubic_x3', 'arb_bicubic_x4', 'arb_bicubic
 # image = 'arb_bicubic_x8'
 
 # Base Case - LR Image
-path = r'Users/omercohen/PycharmProjects/FinalProject'
-image = 'arb_lr_x4'
-color_image = cv2.imread(path + image + '.jpg')
+path = r'Users/omercohen/PycharmProjects/FinalProject/'
+image = 'arb_sr_x4'
+color_image = cv2.imread(r'/Users/omercohen/PycharmProjects/FinalProject/arb_sr_x4.png')
 
 def color2gray(color_image):
     return cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)

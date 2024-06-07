@@ -74,4 +74,34 @@ Calculate the root-hair density by dividing the number of root-hairs by the root
 ## Note : 
 We should have a second thought of applying Mean-Shift filter at step #3. The result of applying thresholding (step #4) right after first-order filter (step #2) may be better.
 
+# ARBIDIOPSIS Root Algorithm : 
+
+This algorithm based on the same principles of the Bell-Pepper algorithm but there are several changes : 
+
+## step 2 : 
+we defined cutoff value to be the first value that gets 35% (inspired by -3db) of the greatest quantity, which related to the background, and has brighter gray value, and set all pixels with lower gray value to 0 (black).
+
+### Figures for demonstration:
+Histogram:     
+![img.png](img.png) ![img_1.png](img_1.png)
+
+Then we skip on applying Mean-Shift filter and moved directly to Otsu algorithm. 
+
+## The results : 
+### The Original Image : 
+<img src="img_2.png" alt="img_2.png" width="400"/>
+
+### Final Bitwise fine-tuning Image : 
+<img src="img_3.png" alt="img_2.png" width="400"/>
+
+### Hairs detection : 
+Finding the haris happens in the same way:
+
+### Root Only :
+
+<img src="img_5.png" alt="img_2.png" width="400"/>
+
+### Hairs Only : 
+
+<img src="img_4.png" alt="img_2.png" width="400"/>
 
