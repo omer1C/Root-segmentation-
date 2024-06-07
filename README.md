@@ -4,9 +4,13 @@ This project is about segmentation of images taken using a pipe camera which too
 By analyzing the root (number of hairs, density, length of the root, etc.) it is possible to determine the quality of the soil for agricultural purposes.
 
 # Bell-Pepper Root Algorithm:
+### Original Image : 
+![LR_P1](https://github.com/omer1C/Root-segmentation-/assets/135855862/00130b5c-8064-4c07-9cd5-876d980c90b5)
+
 ## step 1:
 Convert the color image into grayscale and apply Un-sharp filter to create sharpened image, which consists of subtracting the output of a Gaussian filter from the grayscale image:
 sharpened=α ∙grayscale-β∙blured,where α=1.5,β=0.5
+
 ### Figure for demonstration:
 <img width="288" alt="image" src="https://github.com/omer1C/Root-segmentation-/assets/135855862/fcfb7fb5-3bde-4289-b84c-f5ef6a62c9d3">
 
