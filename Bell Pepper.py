@@ -14,7 +14,7 @@ def unsharp_mask(gray_image):
     sharpened = sharpened.round().astype(np.uint8)
     return sharpened
 
-def first_order_filter(sharpened_image):
+def first_order_filter(sharpened_image, desired_ratio):
     # Compute the histogram of the shifted grayscale image
     histogram_1 = cv2.calcHist([sharpened_image], [0], None, [256], [0, 256])
 
@@ -102,6 +102,8 @@ def fine_tuning(filtered_image):
 def root_only(segmented_image):
     open_iterations = int(np.floor(scaling_factor + np.sqrt(scaling_factor)))
     close_iterations = 2*int(scaling_factor)
+    # open_iterations = 9
+    # close_iterations = 5
     root_only = cv2.morphologyEx(segmented_image, cv2.MORPH_OPEN, kernel=np.ones((5, 5), np.uint8), iterations=open_iterations)
     root_only = cv2.morphologyEx(root_only, cv2.MORPH_CLOSE, kernel=np.ones((2, 2), np.uint8), iterations=close_iterations)
     root_only_rotated = cv2.morphologyEx(cv2.rotate(root_only, cv2.ROTATE_180), cv2.MORPH_CLOSE,
@@ -152,105 +154,105 @@ path = r'/Users/omercohen/PycharmProjects/FinalProject/'
 image_list = ['SR_bicubic_p1_x2', 'SR_bicubic_p1_x3', 'SR_bicubic_p1_x4', 'SR_bicubic_p1_x8', 'SR_P1_X2', 'SR_P1_X3',
          'SR_P1_X4', 'SR_P1_X8']
 # image = 'LR_P1'
+image = image_list[1]
+# for image in image_list :
 
-for image in image_list :
-
-    color_image = cv2.imread(path+image +'.png')
-    scaling_factor = color_image.shape[0] / 438
-    # Based on SR_bicubic_p1_x2 image
+color_image = cv2.imread(path+image +'.png')
+scaling_factor = color_image.shape[0] / 438
+# Based on SR_bicubic_p1_x2 image
 
 
-    # Step 1: Convert into Grayscale
-    gray_image = color2gray(color_image)
-    plt.figure(image)
-    plt.subplot(3, 3, 1)
-    plt.imshow(cv2.cvtColor(color_image, cv2.COLOR_BGR2RGB))
-    plt.title(image)
-    plt.axis('off')
+# Step 1: Convert into Grayscale
+gray_image = color2gray(color_image)
+plt.figure(image)
+plt.subplot(3, 3, 1)
+plt.imshow(cv2.cvtColor(color_image, cv2.COLOR_BGR2RGB))
+plt.title(image)
+plt.axis('off')
 
-    # Step 2: Apply Gaussian Filter (Un-sharp Mask)
-    sharpened_image = unsharp_mask(gray_image)
-    # plt.figure('Sharpened Image')
-    plt.subplot(3, 3, 2)
-    plt.imshow(sharpened_image, cmap='gray')
-    plt.title('Sharpened Image')
-    plt.axis('off')
-    # plt = histogram_plot(sharpened_image, 'Sharpened Image')
+# Step 2: Apply Gaussian Filter (Un-sharp Mask)
+sharpened_image = unsharp_mask(gray_image)
+# plt.figure('Sharpened Image')
+plt.subplot(3, 3, 2)
+plt.imshow(sharpened_image, cmap='gray')
+plt.title('Sharpened Image')
+plt.axis('off')
+# plt = histogram_plot(sharpened_image, 'Sharpened Image')
 
-    # Step 3: First order filter - remove most of the background
-    first_order_filter = first_order_filter(sharpened_image)
-    # plt.figure('First-Order Filter')
-    plt.subplot(3, 3, 3)
-    plt.imshow(first_order_filter, cmap='gray')
-    plt.title('First-Order Filter')
-    plt.axis('off')
-    # plt = histogram_plot(first_order_filter, 'First-Order Filter')
+# Step 3: First order filter - remove most of the background
+first_order_filter = first_order_filter(sharpened_image, desired_ratio)
+# plt.figure('First-Order Filter')
+plt.subplot(3, 3, 3)
+plt.imshow(first_order_filter, cmap='gray')
+plt.title('First-Order Filter')
+plt.axis('off')
+# plt = histogram_plot(first_order_filter, 'First-Order Filter')
 
-    # Step 4: Apply Mean Shift filtering on the color image
-    filtered_image = mean_shift_filter(first_order_filter)
-    plt.subplot(3, 3, 4)
-    plt.imshow(filtered_image, cmap='gray')
-    plt.title(' Mean Shift Filter')
-    plt.axis('off')
+# Step 4: Apply Mean Shift filtering on the color image
+filtered_image = mean_shift_filter(first_order_filter)
+plt.subplot(3, 3, 4)
+plt.imshow(filtered_image, cmap='gray')
+plt.title(' Mean Shift Filter')
+plt.axis('off')
 
-    # Step 5: Apply Thresholding using Otsu
-    segmented_image = thresholding(filtered_image)
-    # plt.figure('Thresholding')
-    plt.subplot(3, 3, 5)
-    plt.imshow(segmented_image, cmap='gray')
-    plt.title('Segmented Image')
-    plt.axis('off')
+# Step 5: Apply Thresholding using Otsu
+segmented_image = thresholding(filtered_image)
+# plt.figure('Thresholding')
+plt.subplot(3, 3, 5)
+plt.imshow(segmented_image, cmap='gray')
+plt.title('Segmented Image')
+plt.axis('off')
 
-    # # Step 6: Apply Morphological Operators
-    # segmented_image = morphology_filter(filtered_image)
-    # plt.figure('Morphological Operators')
-    # plt.subplot(3, 4, 6)
-    # plt.imshow(segmented_image, cmap='gray')
-    # plt.title('Morphological Operators')
-    # plt.axis('off')
+# # Step 6: Apply Morphological Operators
+# segmented_image = morphology_filter(filtered_image)
+# plt.figure('Morphological Operators')
+# plt.subplot(3, 4, 6)
+# plt.imshow(segmented_image, cmap='gray')
+# plt.title('Morphological Operators')
+# plt.axis('off')
 
-    # # Step 7: Fine-Tuning by removing non-related clusters
-    # segmented_image = fine_tuning(filtered_image)
-    # # plt.figure('Segmented Image')
-    # plt.subplot(3, 4, 7)
-    # plt.imshow(segmented_image, cmap='gray')
-    # plt.title('Segmented Image')
-    # plt.axis('off')
+# # Step 7: Fine-Tuning by removing non-related clusters
+# segmented_image = fine_tuning(filtered_image)
+# # plt.figure('Segmented Image')
+# plt.subplot(3, 4, 7)
+# plt.imshow(segmented_image, cmap='gray')
+# plt.title('Segmented Image')
+# plt.axis('off')
 
-    # Step 8: Filter the Root Only from the Segmented Image
-    root_only = root_only(gray_image) #TODO : change back to segmented_image
-    # plt.figure('Root Only Image')
-    plt.subplot(3, 3, 6)
-    plt.imshow(root_only, cmap='gray')
-    plt.title('Root Only Image')
-    plt.axis('off')
+# Step 8: Filter the Root Only from the Segmented Image
+root_only = root_only(segmented_image) #TODO : change back to segmented_image
+# plt.figure('Root Only Image')
+plt.subplot(3, 3, 6)
+plt.imshow(root_only, cmap='gray')
+plt.title('Root Only Image')
+plt.axis('off')
 
-    # Step 9: Filter the Root-Hairs Only from the Segmented Image
-    hairs_only = cv2.subtract(segmented_image, root_only)
-    # plt.figure('Root-Hairs Only Image')
-    plt.subplot(3, 3, 7)
-    plt.imshow(hairs_only, cmap='gray')
-    plt.title('Root-Hairs Only Image')
-    plt.axis('off')
+# Step 9: Filter the Root-Hairs Only from the Segmented Image
+hairs_only = cv2.subtract(segmented_image, root_only)
+# plt.figure('Root-Hairs Only Image')
+plt.subplot(3, 3, 7)
+plt.imshow(hairs_only, cmap='gray')
+plt.title('Root-Hairs Only Image')
+plt.axis('off')
 
-    # Step 10: Contour Detection
-    hairs_num, hairs_contours = contour_detection(hairs_only)
+# Step 10: Contour Detection
+hairs_num, hairs_contours = contour_detection(hairs_only)
 
-    # Step 11: Calculate Root Hair Density
-    root_length = root_length(root_only)
-    density = roots_hair_density(root_length, hairs_num)
+# Step 11: Calculate Root Hair Density
+root_length = root_length(root_only)
+density = roots_hair_density(root_length, hairs_num)
 
-    # Draw contours on the original image for visualization
-    image_with_contours = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
-    cv2.drawContours(image_with_contours, hairs_contours, -1, (0, 255, 0), 2)
-    # plt.figure('Root Hair Contours on The Sharpened Image')
-    plt.subplot(3, 3, 8)
-    plt.imshow(image_with_contours)
-    plt.title(f'{hairs_num} Root Hair Contours')
-    plt.axis('off')
+# Draw contours on the original image for visualization
+image_with_contours = cv2.cvtColor(gray_image, cv2.COLOR_GRAY2BGR)
+cv2.drawContours(image_with_contours, hairs_contours, -1, (0, 255, 0), 2)
+# plt.figure('Root Hair Contours on The Sharpened Image')
+plt.subplot(3, 3, 8)
+plt.imshow(image_with_contours)
+plt.title(f'{hairs_num} Root Hair Contours')
+plt.axis('off')
 
-    plt.tight_layout()
-    plt.show()
+plt.tight_layout()
+plt.show()
 
 
 #TODO: remove this part :
