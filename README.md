@@ -83,7 +83,7 @@ we defined cutoff value to be the first value that gets 35% (inspired by -3db) o
 
 ### Figures for demonstration:
 Histogram:     
-![img.png](img.png) ![img_1.png](img_1.png)
+![img.png](README_IMAGES/img.png) ![img_1.png](README_IMAGES/img_1.png)
 
 Then we skip on applying Mean-Shift filter and moved directly to Otsu algorithm. 
 

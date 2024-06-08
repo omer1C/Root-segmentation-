@@ -2,16 +2,6 @@ import math
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import os
-
-image_list = ['arb_bicubic_x2', 'arb_bicubic_x3', 'arb_bicubic_x4', 'arb_bicubic_x8', 'arb_sr_x2', 'arb_sr_x3',
-         'arb_sr_x4', 'arb_sr_x8']
-# image = 'arb_bicubic_x8'
-
-# Base Case - LR Image
-path = r'Users/omercohen/PycharmProjects/FinalProject/'
-image = 'arb_sr_x4'
-color_image = cv2.imread(r'/Users/omercohen/PycharmProjects/FinalProject/arb_sr_x4.png')
 
 def color2gray(color_image):
     return cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
@@ -30,7 +20,9 @@ def first_order_filter(sharpened_image):
 
     most_common_val = np.argsort(histogram_1.flatten())[-1]
     greatest_magnitude = histogram_1.flatten()[most_common_val]
-    cutoff_val = [val for val in range(0, 255) if val > most_common_val and histogram_1.flatten()[val] <= 0.35 * greatest_magnitude][0]
+    # cutoff_val = [val for val in range(0, 255) if val > most_common_val and histogram_1.flatten()[val] <= 0.35 * greatest_magnitude][0]
+    cutoff_val = find_gray_value_for_desired_ratio(histogram_1, desired_ratio)
+
     clear_values = range(0, cutoff_val)
 
     mask = np.ones_like(sharpened_image) * 255
@@ -39,6 +31,19 @@ def first_order_filter(sharpened_image):
 
     first_order_filter = cv2.bitwise_and(sharpened_image, mask)
     return first_order_filter
+
+def find_gray_value_for_desired_ratio(histogram, desired_ratio):
+    # Step 1: Calculate the total number of pixels
+    total_pixels = np.sum(histogram)
+
+    # Step 2: Calculate the desired number of pixels with value 0
+    desired_zero_pixels = total_pixels * desired_ratio
+
+    # Step 3: Find the gray value using the cumulative sum
+    cumulative_sum = np.cumsum(histogram)
+    gray_value = np.searchsorted(cumulative_sum, desired_zero_pixels)
+
+    return gray_value
 
 def thresholding(filtered_image):
     # Apply thresholding to segment regions
@@ -78,11 +83,14 @@ def fine_tuning(filtered_image):
     return largest_label_image
 
 def root_only(segmented_image):
-    root_only = cv2.morphologyEx(segmented_image, cv2.MORPH_OPEN, kernel=np.ones((5, 5), np.uint8), iterations=5)
-    root_only = cv2.morphologyEx(root_only, cv2.MORPH_OPEN, kernel=np.ones((4, 4), np.uint8), iterations=4)
-    root_only = cv2.morphologyEx(root_only, cv2.MORPH_CLOSE, kernel=np.ones((3, 3), np.uint8), iterations=8)
+    # open_iterations = 9
+    # close_iterations = 5
+    update = scale_factor/4 # 4 is the base case
+    root_only = cv2.morphologyEx(segmented_image, cv2.MORPH_OPEN, kernel=np.ones((5, 5), np.uint8), iterations=int(update*5))
+    root_only = cv2.morphologyEx(root_only, cv2.MORPH_OPEN, kernel=np.ones((4, 4), np.uint8), iterations=int(update*5))
+    root_only = cv2.morphologyEx(root_only, cv2.MORPH_CLOSE, kernel=np.ones((3, 3), np.uint8), iterations=int(update*8))
     root_only_rotated = cv2.morphologyEx(cv2.rotate(root_only, cv2.ROTATE_180), cv2.MORPH_CLOSE,
-                                         kernel=np.ones((3, 3), np.uint8), iterations=8)
+                                         kernel=np.ones((3, 3), np.uint8), iterations=int(update*8))
     root_only = cv2.bitwise_or(root_only, cv2.rotate(root_only_rotated, cv2.ROTATE_180))
     root_only = fine_tuning(morphology_filter(root_only))
 
@@ -122,6 +130,17 @@ def root_length(root_only):
 def roots_hair_density(root_length, hairs_num):
     print(f"Root hairs density: {hairs_num/root_length}")
     return hairs_num/root_length
+
+desired_ratio = 0.7806001901626587
+
+image_list = ['arb_bicubic_x2', 'arb_bicubic_x3', 'arb_bicubic_x4', 'arb_bicubic_x8', 'arb_sr_x2', 'arb_sr_x3',
+         'arb_sr_x4', 'arb_sr_x8']
+
+# Base Case - LR Image
+path = r'/Users/omercohen/PycharmProjects/FinalProject/Arb_Images/'
+image = image_list[3]
+color_image = cv2.imread(path + image + '.png')
+scale_factor = int(image[-1:])
 
 # Step 1: Convert into Grayscale
 gray_image = color2gray(color_image)
@@ -197,7 +216,7 @@ root_length = root_length(root_only)
 density = roots_hair_density(root_length, hairs_num)
 
 # Draw contours on the original image for visualization
-image_with_contours = cv2.cvtColor(sharpened_image, cv2.COLOR_GRAY2BGR)
+image_with_contours = cv2.cvtColor(color_image, cv2.COLOR_GRAY2BGR)
 cv2.drawContours(image_with_contours, hairs_contours, -1, (0, 255, 0), 2)
 # plt.figure('Root Hair Contours on The Sharpened Image')
 plt.subplot(3, 3, 9)

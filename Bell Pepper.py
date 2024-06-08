@@ -21,8 +21,10 @@ def first_order_filter(sharpened_image, desired_ratio):
     most_common_val = np.argsort(histogram_1.flatten())[-1]
     # greatest_magnitude = histogram_1.flatten()[most_common_val]
 
+    #Base case - How to fing the ratio
     # cutoff_val = [val for val in range(0, 255) if val > most_common_val and histogram_1.flatten()[val] <=
     #               0.22*greatest_magnitude][0]
+
     cutoff_val = find_gray_value_for_desired_ratio(histogram_1, desired_ratio)
     clear_values = range(0, cutoff_val)
 
@@ -100,14 +102,13 @@ def fine_tuning(filtered_image):
     return largest_label_image
 
 def root_only(segmented_image):
-    open_iterations = int(np.floor(scaling_factor + np.sqrt(scaling_factor)))
-    close_iterations = 2*int(scaling_factor)
-    # open_iterations = 9
-    # close_iterations = 5
-    root_only = cv2.morphologyEx(segmented_image, cv2.MORPH_OPEN, kernel=np.ones((5, 5), np.uint8), iterations=open_iterations)
-    root_only = cv2.morphologyEx(root_only, cv2.MORPH_CLOSE, kernel=np.ones((2, 2), np.uint8), iterations=close_iterations)
+    # open_iterations = int(np.floor(scaling_factor + np.sqrt(scaling_factor)))
+    # close_iterations = 2*int(scaling_factor)
+    update = scale_factor/2 # Base case is x2
+    root_only = cv2.morphologyEx(segmented_image, cv2.MORPH_OPEN, kernel=np.ones((5, 5), np.uint8), iterations=int(update*2))
+    root_only = cv2.morphologyEx(root_only, cv2.MORPH_CLOSE, kernel=np.ones((2, 2), np.uint8), iterations=int(update*2))
     root_only_rotated = cv2.morphologyEx(cv2.rotate(root_only, cv2.ROTATE_180), cv2.MORPH_CLOSE,
-                                         kernel=np.ones((2, 2), np.uint8), iterations=close_iterations)
+                                         kernel=np.ones((2, 2), np.uint8), iterations=int(update*2))
     root_only = cv2.bitwise_or(root_only, cv2.rotate(root_only_rotated, cv2.ROTATE_180))
     root_only = fine_tuning(root_only)
 
@@ -150,14 +151,13 @@ def roots_hair_density(root_length, hairs_num):
 
 desired_ratio = 0.8667385578155518
 
-path = r'/Users/omercohen/PycharmProjects/FinalProject/'
+path = r'/Users/omercohen/PycharmProjects/FinalProject/Bell_Images/'
 image_list = ['SR_bicubic_p1_x2', 'SR_bicubic_p1_x3', 'SR_bicubic_p1_x4', 'SR_bicubic_p1_x8', 'SR_P1_X2', 'SR_P1_X3',
          'SR_P1_X4', 'SR_P1_X8']
 # image = 'LR_P1'
 image = image_list[1]
-# for image in image_list :
-
-color_image = cv2.imread(path+image +'.png')
+scale_factor = int(image[-1:])
+color_image = cv2.imread(path+image + '.png')
 scaling_factor = color_image.shape[0] / 438
 # Based on SR_bicubic_p1_x2 image
 
