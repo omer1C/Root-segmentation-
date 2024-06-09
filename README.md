@@ -89,19 +89,19 @@ Then we skip on applying Mean-Shift filter and moved directly to Otsu algorithm.
 
 ## The results : 
 ### The Original Image : 
-<img src="img_2.png" alt="img_2.png" width="400"/>
+<img src="https://github.com/omer1C/Root-segmentation-/blob/a5351ec844ee0c8bd58af862f47ed8e3d4faad54/README_IMAGES/img_2.png" alt="img_2.png" width="400"/>
 
 ### Final Bitwise fine-tuning Image : 
-<img src="img_3.png" alt="img_2.png" width="400"/>
+<img src="https://github.com/omer1C/Root-segmentation-/blob/a5351ec844ee0c8bd58af862f47ed8e3d4faad54/README_IMAGES/img_3.png" alt="img_2.png" width="400"/>
 
 ### Hairs detection : 
 Finding the haris happens in the same way:
 
 ### Root Only :
 
-<img src="img_5.png" alt="img_2.png" width="400"/>
+<img src="https://github.com/omer1C/Root-segmentation-/blob/a5351ec844ee0c8bd58af862f47ed8e3d4faad54/README_IMAGES/img_5.png" alt="img_2.png" width="400"/>
 
 ### Hairs Only : 
 
-<img src="img_4.png" alt="img_2.png" width="400"/>
+<img src="https://github.com/omer1C/Root-segmentation-/blob/a5351ec844ee0c8bd58af862f47ed8e3d4faad54/README_IMAGES/img_4.png" alt="img_2.png" width="400"/>
 
