@@ -1,7 +1,30 @@
-# Root-segmentation
+# Root segmentation
 
-This project is about segmentation of images taken using a pipe camera which took pictures from inside the soil of roots in different soil types.
-By analyzing the root (number of hairs, density, length of the root, etc.) it is possible to determine the quality of the soil for agricultural purposes.
+Within the era of climate changes and increase in global demographics, the demand for reliable
+food sources, and agricultural products in particular, is a constant need.
+The purpose of this project is to create a robust method for measuring major root trait, and by that
+providing insights into plant health. Our objective is to develop an algorithm to accurately detect
+and count root hairs and test the impact of super-resolution. The innovation lies in the idea to
+remove the main root from the segmented image and thereby isolate the root hairs. We propose a
+method which first performs image segmentation over the raw image to extract the root with its’
+branches from the soil background, then uses morphological operators to remove the main root
+without branches and finally detects and counts root hairs by mapping each root hair to a separate
+contour. The goal is to achieve over 80% precision in detecting and counting root hairs, where
+super-resolution images expected to outperform non-super-resolution images.
+
+# Project goals
+
+The project aims to develop a non-invasive method for assessing plant health and nutrient uptake
+by leveraging agricultural root image segmentation. Our goal is to propose a solution that
+determines the plant's condition in situ—whether it receives adequate nutrition, water, and other
+vital factors—without uprooting it. This approach utilizes image segmentation and classic
+algorithms, avoiding neural networks, to accurately separate the root structure from the soil
+background. The focus is on detecting and counting root hairs, crucial indicators of root health and
+nutrient absorption efficiency. This methodology seeks to enhance agricultural practices by
+providing insights into plant health directly from field imagery, facilitating informed decisions for
+optimal crop management. Our project aims to achieve a precision score exceeding 80% in the task
+of detecting and counting root hairs. Additionally, we seek to determine if super-resolution images
+consistently yield higher accuracy scores compared to non-super-resolution images on average.
 
 # Bell-Pepper Root Algorithm:
 ### Original Image : 
