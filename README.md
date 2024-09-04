@@ -32,37 +32,52 @@ To address the challenge of counting root hairs, our approach began by recognizi
 # Block Diagram 
 <img width="650" alt="image" src="https://github.com/user-attachments/assets/6907dc64-255b-4a51-82fc-084b33fde398">
 
-# Bell-Pepper Root Algorithm:
+# Proposed Algorithm:
 ### Original Image : 
-#### Bell Pepper :                                                                                         
-![image](https://github.com/user-attachments/assets/776b94c7-faec-4c67-9fe3-695dac3fce9f)  
-#### Arabidopsis :
-![image](https://github.com/user-attachments/assets/ceef5e3b-f7a9-455b-bffb-7f90e6cd4e4e) 
+| ![Bell Pepper](https://github.com/user-attachments/assets/776b94c7-faec-4c67-9fe3-695dac3fce9f) | ![Arabidopsis](https://github.com/user-attachments/assets/ceef5e3b-f7a9-455b-bffb-7f90e6cd4e4e) |
+|:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+| **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
 
                                                                              
 
-## step 1:
-Convert the color image into grayscale and apply Un-sharp filter to create sharpened image, which consists of subtracting the output of a Gaussian filter from the grayscale image:
+## Step 1:
+Convert the color image into grayscale and apply un-sharp filter to create sharpened image, which consists of subtracting the output of a Gaussian filter from the grayscale image:
 sharpened=α ∙grayscale-β∙blured,where α=1.5,β=0.5
+### Gray scale images : 
+| ![Bell Pepper](https://github.com/user-attachments/assets/a2f541da-257e-47bb-aca8-0e351c3aa381) | ![Arabidopsis](https://github.com/user-attachments/assets/2f6fb3ad-11fc-455c-a34d-8ace56bb779d) |
+|:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+| **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
 
-### Figure for demonstration:
-<img width="288" alt="image" src="https://github.com/omer1C/Root-segmentation-/assets/135855862/fcfb7fb5-3bde-4289-b84c-f5ef6a62c9d3">
+### Sharpened images : 
+| ![Bell Pepper](https://github.com/user-attachments/assets/a132fdcf-e3bd-41b3-9438-2dc98662608f) | ![Arabidopsis](https://github.com/user-attachments/assets/7791c28c-34cd-4954-af59-060b277dc19b) |
+|:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+| **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
 
-## step 2 : 
+## Step 2 : 
 Apply First-order filter to remove most portions of the background.
 The assumption is that the largest group of pixels within the histogram is related to the background, and by the nature of the root, the pixel group related to it will be spread in the brighter grayscale range.
-Therefore, we defined cutoff value to be the first value that gets half (inspired by -3db) of the greatest quantity, which related to the background, and has brighter gray value, and set all pixels with lower gray value to 0 (black).
-### Figures for demonstration:
-#### Histogram:
-<img width="295" alt="image" src="https://github.com/omer1C/Root-segmentation-/assets/135855862/734b215e-e725-432c-8414-3b789d1af9e5">
+We set a threshold value that corresponds to 0.78% of the most common pixel value and has a higher grayscale value than the most common pixel value, assigning all other pixels to 0 (black). 
 
-#### First-order filter output:
-<img width="321" alt="image" src="https://github.com/omer1C/Root-segmentation-/assets/135855862/8726209b-ffb2-412e-9c20-9891351b9826">
+#### Bell Pepper Histogram:
+| ![Before First Order Filter](https://github.com/user-attachments/assets/ed8fea03-242b-4fbf-9fe1-03138ce5f36c) | ![After First Order Filter](https://github.com/user-attachments/assets/86837dca-fd42-460f-b264-94319b016fac) |
+|:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+| **Before First Order Filter**                                                                                 | **After First Order Filter**                                                                                 |
 
-## step 3 : 
-Apply Mean-Shift filter to find clusters within the image.
-### Figure for demonstration:
-<img width="326" alt="image" src="https://github.com/omer1C/Root-segmentation-/assets/135855862/6e5a0176-f708-4b0b-ab96-a3757f74e3a6">
+#### Arabidopsis Histogram:
+| ![Before First Order Filter](https://github.com/user-attachments/assets/54f4dbb3-dd66-4479-a1a2-94c7f4de36af) | ![After First Order Filter](https://github.com/user-attachments/assets/88cbdabf-c428-4d58-a535-75b318676a4a) |
+|:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+| **Before First Order Filter**                                                                                 | **After First Order Filter**                                                                                 |
+
+### First Order Filter Output:
+| ![Bell Pepper](https://github.com/user-attachments/assets/62ecc088-36a0-4d9c-9207-665ea04a206d) | ![Arabidopsis](https://github.com/user-attachments/assets/e99fcd9a-eb44-4137-af85-8c650f36ad55) |
+|:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+| **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
+
+## Step 3 (Bell Pepper only) : 
+Dividing the image into clusters by apply Mean-Shift filter to find clusters within the image.
+#### Mean Shift Filter:
+![image](https://github.com/user-attachments/assets/28fddc0a-2ef2-4bd8-a9d1-64453ca7c109)
+
 
 ## step 4 : 
 Apply thresholding using Otsu algorithm, and find the largest cluster, which we assume related to the root.
