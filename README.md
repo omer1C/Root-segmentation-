@@ -26,9 +26,20 @@ optimal crop management. Our project aims to achieve a precision score exceeding
 of detecting and counting root hairs. Additionally, we seek to determine if super-resolution images
 consistently yield higher accuracy scores compared to non-super-resolution images on average.
 
+# Approach, Design, and Solution 
+To address the challenge of counting root hairs, our approach began by recognizing the importance of preprocessing the image effectively. Starting with segmentation yielded a clear representation of the root in white against a black background. Once we obtained this binary image and understood the root's structure, our next step focused on isolating the branching hairs from the main root. By identifying distinct contours within the segmented image, we aimed to accurately count the individual root hairs.
+
+# Block Diagram 
+<img width="650" alt="image" src="https://github.com/user-attachments/assets/6907dc64-255b-4a51-82fc-084b33fde398">
+
 # Bell-Pepper Root Algorithm:
 ### Original Image : 
-![LR_P1](https://github.com/omer1C/Root-segmentation-/assets/135855862/00130b5c-8064-4c07-9cd5-876d980c90b5)
+#### Bell Pepper :                                                                                         
+![image](https://github.com/user-attachments/assets/776b94c7-faec-4c67-9fe3-695dac3fce9f)  
+#### Arabidopsis :
+![image](https://github.com/user-attachments/assets/ceef5e3b-f7a9-455b-bffb-7f90e6cd4e4e) 
+
+                                                                             
 
 ## step 1:
 Convert the color image into grayscale and apply Un-sharp filter to create sharpened image, which consists of subtracting the output of a Gaussian filter from the grayscale image:
