@@ -40,7 +40,7 @@ To address the challenge of counting root hairs, our approach began by recognizi
 
                                                                              
 
-## Step 1:
+## Step 1 : Convert to Gray Scale Image and Sharpen the Image
 Convert the color image into grayscale and apply un-sharp filter to create sharpened image, which consists of subtracting the output of a Gaussian filter from the grayscale image:
 sharpened=α ∙grayscale-β∙blured,where α=1.5,β=0.5
 ### Gray scale images : 
@@ -48,17 +48,17 @@ sharpened=α ∙grayscale-β∙blured,where α=1.5,β=0.5
 |:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
 | **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
 
-### Sharpened images : 
+### Sharpened Images : 
 | ![Bell Pepper](https://github.com/user-attachments/assets/a132fdcf-e3bd-41b3-9438-2dc98662608f) | ![Arabidopsis](https://github.com/user-attachments/assets/7791c28c-34cd-4954-af59-060b277dc19b) |
 |:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
 | **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
 
-## Step 2 : 
+## Step 2 : First Order Filter
 Apply First-order filter to remove most portions of the background.
 The assumption is that the largest group of pixels within the histogram is related to the background, and by the nature of the root, the pixel group related to it will be spread in the brighter grayscale range.
 We set a threshold value that corresponds to 0.78% of the most common pixel value and has a higher grayscale value than the most common pixel value, assigning all other pixels to 0 (black). 
 
-#### Bell Pepper Histogram:
+#### Bell Pepper Histogram :
 | ![Before First Order Filter](https://github.com/user-attachments/assets/ed8fea03-242b-4fbf-9fe1-03138ce5f36c) | ![After First Order Filter](https://github.com/user-attachments/assets/86837dca-fd42-460f-b264-94319b016fac) |
 |:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
 | **Before First Order Filter**                                                                                 | **After First Order Filter**                                                                                 |
@@ -73,84 +73,42 @@ We set a threshold value that corresponds to 0.78% of the most common pixel valu
 |:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
 | **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
 
-## Step 3 (Bell Pepper only) : 
+## Step 3 : Mean Shift Filter (Bell Pepper Only) 
 Dividing the image into clusters by apply Mean-Shift filter to find clusters within the image.
 #### Mean Shift Filter:
 ![image](https://github.com/user-attachments/assets/28fddc0a-2ef2-4bd8-a9d1-64453ca7c109)
 
 
-## step 4 : 
+## step 4 : Extract the Root
 Apply thresholding using Otsu algorithm, and find the largest cluster, which we assume related to the root.
-### Figure for demonstration:
-<img width="341" alt="image" src="https://github.com/omer1C/Root-segmentation-/assets/135855862/450ec57e-5a82-4f35-b3e4-023af5c8427a">
 
-## step 5 : 
-Apply Morphological Opening operator on the image to remove outer noise not related to the root and Closing operator to fill gaps within the root.
-### Figure for demonstration:
-<img width="479" alt="image" src="https://github.com/omer1C/Root-segmentation-/assets/135855862/4be7a569-2db5-4fe0-b828-e043e5342982">
+#### Otsu algorithm output : 
+| ![Bell Pepper](https://github.com/user-attachments/assets/51c79baf-34d6-4520-9a0c-4a74fb24cf4d) | ![Arabidopsis](https://github.com/user-attachments/assets/a4c6f846-f348-4dec-bdf6-8f7d89e48ca9) |
+|:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+| **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
 
-## step 6 : 
-Apply fine-tuning to remove outer noise by finding again the largest cluster.
-This is the final step to get a segmented image.
-### Figure for demonstration:
-<img width="541" alt="image" src="https://github.com/omer1C/Root-segmentation-/assets/135855862/2a690d7c-14d3-48f1-ac21-9980fc9ecf38">
+#### Extracting the lagest component :
+| ![Bell Pepper](https://github.com/user-attachments/assets/de95ca46-7de2-4ad5-aa38-5f3e3a46f442) | ![Arabidopsis](https://github.com/user-attachments/assets/b18f7349-919e-4e3a-bba4-2bc576dcb119) |
+|:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+| **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
 
-## step 7 : 
+## Step 7 : Isolating the Main Root
 Filter the root only from the segmented image by applying several iterations of Morphological Opening operator to remove most of the root-hairs and then applying several iterations of Closing operator for complementary corrections.
-### Figure for demonstration:
-<img width="385" alt="image" src="https://github.com/omer1C/Root-segmentation-/assets/135855862/01f43393-cc63-449f-8b9b-6f65e92e61fe">
+#### Bell Pepper :
+![image](https://github.com/user-attachments/assets/566da957-ac4e-4ab5-9c7e-c49fb68cb5aa)
 
-## step 8 : 
+#### Arabidopsis :
+![image](https://github.com/user-attachments/assets/c20b10f0-d60e-46b1-889e-6dc803aed29c)
+
+## Step 8 : Extracting and Counting the Hairs
 Filter the root-hairs only from the segmented image by subtracting the root only from the segmented image. 
-### Figure for demonstration:
-<img width="405" alt="image" src="https://github.com/omer1C/Root-segmentation-/assets/135855862/74a5c89a-147e-4493-aefe-818d34d71c75">
+#### Hairs Only :
+| ![Bell Pepper](https://github.com/user-attachments/assets/22a6f5ac-d751-4d8e-9745-7f0e1e13ee8a) | ![Arabidopsis](https://github.com/user-attachments/assets/04128c5c-453d-4743-9e27-dd1b938b4776) |
+|:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+| **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
 
-### step 9 :
-Count the number of root-hairs by detecting the number of contours.
-
-### Figure for demonstration:
-<img width="392" alt="image" src="https://github.com/omer1C/Root-segmentation-/assets/135855862/026d9dea-34f9-459d-bb00-75764c1318aa">
-
-
-Calculate the root’s length, by calculating the Euclidian distance between the leftmost and rightmost pixels, assuming that the root is relatively linear shaped.
-
-
-Calculate the root-hair density by dividing the number of root-hairs by the root’s length.
-
-<img width="246" alt="image" src="https://github.com/omer1C/Root-segmentation-/assets/135855862/fefe0351-ad71-4fc4-80c7-571dc5306147">
-
-
-## Note : 
-We should have a second thought of applying Mean-Shift filter at step #3. The result of applying thresholding (step #4) right after first-order filter (step #2) may be better.
-
-# ARBIDIOPSIS Root Algorithm : 
-
-This algorithm based on the same principles of the Bell-Pepper algorithm but there are several changes : 
-
-## step 2 : 
-we defined cutoff value to be the first value that gets 35% (inspired by -3db) of the greatest quantity, which related to the background, and has brighter gray value, and set all pixels with lower gray value to 0 (black).
-
-### Figures for demonstration:
-Histogram:     
-![img.png](README_IMAGES/img.png) ![img_1.png](README_IMAGES/img_1.png)
-
-Then we skip on applying Mean-Shift filter and moved directly to Otsu algorithm. 
-
-## The results : 
-### The Original Image : 
-<img src="https://github.com/omer1C/Root-segmentation-/blob/a5351ec844ee0c8bd58af862f47ed8e3d4faad54/README_IMAGES/img_2.png" alt="img_2.png" width="400"/>
-
-### Final Bitwise fine-tuning Image : 
-<img src="https://github.com/omer1C/Root-segmentation-/blob/a5351ec844ee0c8bd58af862f47ed8e3d4faad54/README_IMAGES/img_3.png" alt="img_2.png" width="400"/>
-
-### Hairs detection : 
-Finding the haris happens in the same way:
-
-### Root Only :
-
-<img src="https://github.com/omer1C/Root-segmentation-/blob/a5351ec844ee0c8bd58af862f47ed8e3d4faad54/README_IMAGES/img_5.png" alt="img_2.png" width="400"/>
-
-### Hairs Only : 
-
-<img src="https://github.com/omer1C/Root-segmentation-/blob/a5351ec844ee0c8bd58af862f47ed8e3d4faad54/README_IMAGES/img_4.png" alt="img_2.png" width="400"/>
+#### Final Results :
+| ![Bell Pepper](https://github.com/user-attachments/assets/e5c792a1-2ad2-43e7-be2f-ae32d655daab) | ![Arabidopsis](https://github.com/user-attachments/assets/ca344d1b-117e-4712-ad09-c715362b19c1) |
+|:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+| **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
 
