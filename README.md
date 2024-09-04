@@ -1,4 +1,4 @@
-# Root segmentation
+# Root Segmentation
 
 Within the era of climate changes and increase in global demographics, the demand for reliable
 food sources, and agricultural products in particular, is a constant need.
@@ -12,7 +12,7 @@ without branches and finally detects and counts root hairs by mapping each root 
 contour. The goal is to achieve over 80% precision in detecting and counting root hairs, where
 super-resolution images expected to outperform non-super-resolution images.
 
-# Project goals
+# Project Goals
 
 The project aims to develop a non-invasive method for assessing plant health and nutrient uptake
 by leveraging agricultural root image segmentation. Our goal is to propose a solution that
@@ -79,20 +79,20 @@ Dividing the image into clusters by apply Mean-Shift filter to find clusters wit
 ![image](https://github.com/user-attachments/assets/28fddc0a-2ef2-4bd8-a9d1-64453ca7c109)
 
 
-## step 4 : Extract the Root
+## Step 4 : Extract the Root
 Apply thresholding using Otsu algorithm, and find the largest cluster, which we assume related to the root.
 
-#### Otsu algorithm output : 
+#### Otsu Algorithm Output : 
 | ![Bell Pepper](https://github.com/user-attachments/assets/51c79baf-34d6-4520-9a0c-4a74fb24cf4d) | ![Arabidopsis](https://github.com/user-attachments/assets/a4c6f846-f348-4dec-bdf6-8f7d89e48ca9) |
 |:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
 | **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
 
-#### Extracting the lagest component :
+#### Extracting the Lagest Component :
 | ![Bell Pepper](https://github.com/user-attachments/assets/de95ca46-7de2-4ad5-aa38-5f3e3a46f442) | ![Arabidopsis](https://github.com/user-attachments/assets/b18f7349-919e-4e3a-bba4-2bc576dcb119) |
 |:-----------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
 | **Bell Pepper**                                                                                 | **Arabidopsis**                                                                                 |
 
-## Step 7 : Isolating the Main Root
+## Step 5 : Isolating the Main Root
 Filter the root only from the segmented image by applying several iterations of Morphological Opening operator to remove most of the root-hairs and then applying several iterations of Closing operator for complementary corrections.
 #### Bell Pepper :
 ![image](https://github.com/user-attachments/assets/566da957-ac4e-4ab5-9c7e-c49fb68cb5aa)
@@ -100,7 +100,7 @@ Filter the root only from the segmented image by applying several iterations of 
 #### Arabidopsis :
 ![image](https://github.com/user-attachments/assets/c20b10f0-d60e-46b1-889e-6dc803aed29c)
 
-## Step 8 : Extracting and Counting the Hairs
+## Step 6 : Extracting and Counting the Hairs
 Filter the root-hairs only from the segmented image by subtracting the root only from the segmented image. 
 #### Hairs Only :
 | ![Bell Pepper](https://github.com/user-attachments/assets/22a6f5ac-d751-4d8e-9745-7f0e1e13ee8a) | ![Arabidopsis](https://github.com/user-attachments/assets/04128c5c-453d-4743-9e27-dd1b938b4776) |
