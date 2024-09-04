@@ -16,13 +16,9 @@ def unsharp_mask(gray_image):
 
 def first_order_filter(sharpened_image):
     # Compute the histogram of the shifted grayscale image
-    histogram_1 = cv2.calcHist([sharpened_image], [0], None, [256], [0, 256])
+    histogram = cv2.calcHist([sharpened_image], [0], None, [256], [0, 256])
 
-    most_common_val = np.argsort(histogram_1.flatten())[-1]
-    greatest_magnitude = histogram_1.flatten()[most_common_val]
-    # cutoff_val = [val for val in range(0, 255) if val > most_common_val and histogram_1.flatten()[val] <= 0.35 * greatest_magnitude][0]
-    cutoff_val = find_gray_value_for_desired_ratio(histogram_1, desired_ratio)
-
+    cutoff_val = find_gray_value_for_desired_ratio(histogram, desired_ratio)
     clear_values = range(0, cutoff_val)
 
     mask = np.ones_like(sharpened_image) * 255
@@ -30,7 +26,17 @@ def first_order_filter(sharpened_image):
         mask[sharpened_image == value] = 0
 
     first_order_filter = cv2.bitwise_and(sharpened_image, mask)
+
     return first_order_filter
+
+def find_desired_ratio(first_order_filter):
+    histogram = cv2.calcHist([first_order_filter], [0], None, [256], [0, 256])
+    background = histogram.flatten()[0]
+    total_pixels = np.sum(histogram)
+    desired_ratio = background/total_pixels
+    print(f'Desired background ratio: {desired_ratio}')
+
+    return desired_ratio
 
 def find_gray_value_for_desired_ratio(histogram, desired_ratio):
     # Step 1: Calculate the total number of pixels
@@ -83,16 +89,13 @@ def fine_tuning(filtered_image):
     return largest_label_image
 
 def root_only(segmented_image):
-    # open_iterations = 9
-    # close_iterations = 5
-    update = scale_factor/4 # 4 is the base case
-    root_only = cv2.morphologyEx(segmented_image, cv2.MORPH_OPEN, kernel=np.ones((5, 5), np.uint8), iterations=int(update*5))
-    root_only = cv2.morphologyEx(root_only, cv2.MORPH_OPEN, kernel=np.ones((4, 4), np.uint8), iterations=int(update*5))
-    root_only = cv2.morphologyEx(root_only, cv2.MORPH_CLOSE, kernel=np.ones((3, 3), np.uint8), iterations=int(update*8))
-    root_only_rotated = cv2.morphologyEx(cv2.rotate(root_only, cv2.ROTATE_180), cv2.MORPH_CLOSE,
-                                         kernel=np.ones((3, 3), np.uint8), iterations=int(update*8))
-    root_only = cv2.bitwise_or(root_only, cv2.rotate(root_only_rotated, cv2.ROTATE_180))
-    root_only = fine_tuning(morphology_filter(root_only))
+    temp_ratio = round(find_desired_ratio(segmented_image), 2)
+    ratio = scaling_factor*segmented_ratio/temp_ratio
+    print(f"Ratio: {ratio}, Open Iterations: {int(5*np.sqrt(ratio))}")
+    root_only = cv2.morphologyEx(segmented_image, cv2.MORPH_OPEN, kernel=np.ones((5, 5), np.uint8), iterations=int(5*np.sqrt(ratio)))
+    root_only = cv2.morphologyEx(root_only, cv2.MORPH_CLOSE, kernel=np.ones((4, 4), np.uint8), iterations=int(5*ratio))
+    root_only = cv2.morphologyEx(root_only, cv2.MORPH_OPEN, kernel=np.ones((4, 4), np.uint8), iterations=int(5*np.sqrt(ratio)))
+    root_only = fine_tuning(root_only)
 
     return root_only
 
@@ -131,16 +134,20 @@ def roots_hair_density(root_length, hairs_num):
     print(f"Root hairs density: {hairs_num/root_length}")
     return hairs_num/root_length
 
-desired_ratio = 0.7806001901626587
-
 image_list = ['arb_bicubic_x2', 'arb_bicubic_x3', 'arb_bicubic_x4', 'arb_bicubic_x8', 'arb_sr_x2', 'arb_sr_x3',
          'arb_sr_x4', 'arb_sr_x8']
 
 # Base Case - LR Image
 path = r'/Users/omercohen/PycharmProjects/FinalProject/Arb_Images/'
 image = image_list[3]
+
+desired_ratio = 0.8
+segmented_ratio = 0.89
+
 color_image = cv2.imread(path + image + '.png')
-scale_factor = int(image[-1:])
+# scale_factor = int(image[-1:])
+scaling_factor = color_image.shape[0] / 816
+
 
 # Step 1: Convert into Grayscale
 gray_image = color2gray(color_image)
@@ -169,30 +176,14 @@ plt.axis('off')
 # plt = histogram_plot(first_order_filter, 'First-Order Filter')
 
 # Step 4: Apply Thresholding using Otsu
-filtered_image = thresholding(first_order_filter)
+segmented_image = thresholding(first_order_filter)
 # plt.figure('Thresholding')
 plt.subplot(3, 3, 4)
-plt.imshow(filtered_image, cmap='gray')
-plt.title('Thresholding')
-plt.axis('off')
-
-# Step 5: Apply Morphological Operators
-segmented_image = morphology_filter(filtered_image)
-# plt.figure('Morphological Operators')
-plt.subplot(3, 3, 5)
-plt.imshow(segmented_image, cmap='gray')
-plt.title('Morphological Operators')
-plt.axis('off')
-
-# Step 6: Fine-Tuning by removing non-related clusters TODO:plot an image of sharpened less segmented (to view the segmentation accuracy along the original background)
-segmented_image = fine_tuning(segmented_image)
-# plt.figure('Segmented Image')
-plt.subplot(3, 3, 6)
 plt.imshow(segmented_image, cmap='gray')
 plt.title('Segmented Image')
 plt.axis('off')
 
-# Step 7: Filter the Root Only from the Segmented Image
+# Step 5: Filter the Root Only from the Segmented Image
 root_only = root_only(segmented_image)
 # plt.figure('Root Only Image')
 plt.subplot(3, 3, 7)
@@ -200,7 +191,7 @@ plt.imshow(root_only, cmap='gray')
 plt.title('Root Only Image')
 plt.axis('off')
 
-# Step 8: Filter the Root-Hairs Only from the Segmented Image
+# Step 6: Filter the Root-Hairs Only from the Segmented Image
 hairs_only = cv2.subtract(segmented_image, root_only)
 # plt.figure('Root-Hairs Only Image')
 plt.subplot(3, 3, 8)
@@ -208,10 +199,10 @@ plt.imshow(hairs_only, cmap='gray')
 plt.title('Root-Hairs Only Image')
 plt.axis('off')
 
-# Step 9: Contour Detection
+# Step 7: Contour Detection
 hairs_num, hairs_contours = contour_detection(hairs_only)
 
-# Step 10: Calculate Root Hair Density
+# Step 9: Calculate Root Hair Density
 root_length = root_length(root_only)
 density = roots_hair_density(root_length, hairs_num)
 
