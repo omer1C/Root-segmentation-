@@ -3,6 +3,21 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
+image_list = ['arb_bicubic_x2', 'arb_bicubic_x3', 'arb_bicubic_x4', 'arb_bicubic_x8', 'arb_sr_x2', 'arb_sr_x3',
+         'arb_sr_x4', 'arb_sr_x8']
+
+# Base Case - LR Image
+path = r'/Users/omercohen/PycharmProjects/FinalProject/Arb_Images/'
+image = image_list[3]
+
+desired_ratio = 0.8
+segmented_ratio = 0.89
+
+color_image = cv2.imread(path + image + '.png')
+# scale_factor = int(image[-1:])
+scaling_factor = color_image.shape[0] / 816
+
+
 def color2gray(color_image):
     return cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
 
@@ -134,89 +149,73 @@ def roots_hair_density(root_length, hairs_num):
     print(f"Root hairs density: {hairs_num/root_length}")
     return hairs_num/root_length
 
-image_list = ['arb_bicubic_x2', 'arb_bicubic_x3', 'arb_bicubic_x4', 'arb_bicubic_x8', 'arb_sr_x2', 'arb_sr_x3',
-         'arb_sr_x4', 'arb_sr_x8']
+def Arbidiopsis_active():
+    # Step 1: Convert into Grayscale
+    gray_image = color2gray(color_image)
+    plt.figure(image)
+    plt.subplot(3, 3, 1)
+    plt.imshow(cv2.cvtColor(color_image, cv2.COLOR_BGR2RGB))
+    plt.title(image)
+    plt.axis('off')
 
-# Base Case - LR Image
-path = r'/Users/omercohen/PycharmProjects/FinalProject/Arb_Images/'
-image = image_list[3]
+    # Step 2: Apply Gaussian Filter (Un-sharp Mask)
+    sharpened_image = unsharp_mask(gray_image)
+    # plt.figure('Sharpened Image')
+    plt.subplot(3, 3, 2)
+    plt.imshow(sharpened_image, cmap='gray')
+    plt.title('Sharpened Image')
+    plt.axis('off')
+    # plt = histogram_plot(sharpened_image, 'Sharpened Image')
 
-desired_ratio = 0.8
-segmented_ratio = 0.89
+    # Step 3: First order filter - remove most of the background
+    first_order_filter_image = first_order_filter(sharpened_image)
+    # plt.figure('First-Order Filter')
+    plt.subplot(3, 3, 3)
+    plt.imshow(first_order_filter_image, cmap='gray')
+    plt.title('First-Order Filter')
+    plt.axis('off')
+    # plt = histogram_plot(first_order_filter, 'First-Order Filter')
 
-color_image = cv2.imread(path + image + '.png')
-# scale_factor = int(image[-1:])
-scaling_factor = color_image.shape[0] / 816
+    # Step 4: Apply Thresholding using Otsu
+    segmented_image = thresholding(first_order_filter_image)
+    # plt.figure('Thresholding')
+    plt.subplot(3, 3, 4)
+    plt.imshow(segmented_image, cmap='gray')
+    plt.title('Segmented Image')
+    plt.axis('off')
 
+    # Step 5: Filter the Root Only from the Segmented Image
+    root_only_image = root_only(segmented_image)
+    # plt.figure('Root Only Image')
+    plt.subplot(3, 3, 7)
+    plt.imshow(root_only_image, cmap='gray')
+    plt.title('Root Only Image')
+    plt.axis('off')
 
-# Step 1: Convert into Grayscale
-gray_image = color2gray(color_image)
-plt.figure(image)
-plt.subplot(3, 3, 1)
-plt.imshow(cv2.cvtColor(color_image, cv2.COLOR_BGR2RGB))
-plt.title(image)
-plt.axis('off')
+    # Step 6: Filter the Root-Hairs Only from the Segmented Image
+    hairs_only = cv2.subtract(segmented_image, root_only_image)
+    # plt.figure('Root-Hairs Only Image')
+    plt.subplot(3, 3, 8)
+    plt.imshow(hairs_only, cmap='gray')
+    plt.title('Root-Hairs Only Image')
+    plt.axis('off')
 
-# Step 2: Apply Gaussian Filter (Un-sharp Mask)
-sharpened_image = unsharp_mask(gray_image)
-# plt.figure('Sharpened Image')
-plt.subplot(3, 3, 2)
-plt.imshow(sharpened_image, cmap='gray')
-plt.title('Sharpened Image')
-plt.axis('off')
-# plt = histogram_plot(sharpened_image, 'Sharpened Image')
+    # Step 7: Contour Detection
+    hairs_num, hairs_contours = contour_detection(hairs_only)
 
-# Step 3: First order filter - remove most of the background
-first_order_filter = first_order_filter(sharpened_image)
-# plt.figure('First-Order Filter')
-plt.subplot(3, 3, 3)
-plt.imshow(first_order_filter, cmap='gray')
-plt.title('First-Order Filter')
-plt.axis('off')
-# plt = histogram_plot(first_order_filter, 'First-Order Filter')
+    # Step 9: Calculate Root Hair Density
+    root_length_image = root_length(root_only_image)
+    density = roots_hair_density(root_length_image, hairs_num)
 
-# Step 4: Apply Thresholding using Otsu
-segmented_image = thresholding(first_order_filter)
-# plt.figure('Thresholding')
-plt.subplot(3, 3, 4)
-plt.imshow(segmented_image, cmap='gray')
-plt.title('Segmented Image')
-plt.axis('off')
+    # Draw contours on the original image for visualization
+    cv2.drawContours(color_image, hairs_contours, -1, (0, 255, 0), 2)
+    # plt.figure('Root Hair Contours on The Sharpened Image')
+    plt.subplot(3, 3, 9)
+    plt.imshow(cv2.cvtColor(color_image, cv2.COLOR_BGR2RGB))
+    plt.title(f'{hairs_num} Root Hair Contours')
+    plt.axis('off')
 
-# Step 5: Filter the Root Only from the Segmented Image
-root_only = root_only(segmented_image)
-# plt.figure('Root Only Image')
-plt.subplot(3, 3, 7)
-plt.imshow(root_only, cmap='gray')
-plt.title('Root Only Image')
-plt.axis('off')
-
-# Step 6: Filter the Root-Hairs Only from the Segmented Image
-hairs_only = cv2.subtract(segmented_image, root_only)
-# plt.figure('Root-Hairs Only Image')
-plt.subplot(3, 3, 8)
-plt.imshow(hairs_only, cmap='gray')
-plt.title('Root-Hairs Only Image')
-plt.axis('off')
-
-# Step 7: Contour Detection
-hairs_num, hairs_contours = contour_detection(hairs_only)
-
-# Step 9: Calculate Root Hair Density
-root_length = root_length(root_only)
-density = roots_hair_density(root_length, hairs_num)
-
-# Draw contours on the original image for visualization
-cv2.drawContours(color_image, hairs_contours, -1, (0, 255, 0), 2)
-# plt.figure('Root Hair Contours on The Sharpened Image')
-plt.subplot(3, 3, 9)
-plt.imshow(cv2.cvtColor(color_image, cv2.COLOR_BGR2RGB))
-plt.title(f'{hairs_num} Root Hair Contours')
-plt.axis('off')
-
-plt.tight_layout()
-# Save the figure to a file
-# plt.savefig(os.path.join(path, f'{image} processing.png'), dpi=500, bbox_inches='tight')
-plt.show()
-
-#synthetic
+    plt.tight_layout()
+    # Save the figure to a file
+    # plt.savefig(os.path.join(path, f'{image} processing.png'), dpi=500, bbox_inches='tight')
+    plt.show()
