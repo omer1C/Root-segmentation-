@@ -3,19 +3,12 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-image_list = ['arb_bicubic_x2', 'arb_bicubic_x3', 'arb_bicubic_x4', 'arb_bicubic_x8', 'arb_sr_x2', 'arb_sr_x3',
-         'arb_sr_x4', 'arb_sr_x8']
-
-# Base Case - LR Image
-path = r'/Users/omercohen/PycharmProjects/FinalProject/Arb_Images/'
-image = image_list[3]
-
+# Desired ratio defined to be the background(black)/total pixels in 1st order filter step
 desired_ratio = 0.8
+# Segmented ratio defined to be the segmented image(white)/total pixels
 segmented_ratio = 0.89
 
-color_image = cv2.imread(path + image + '.png')
-# scale_factor = int(image[-1:])
-scaling_factor = color_image.shape[0] / 816
+
 
 
 def color2gray(color_image):
@@ -103,7 +96,7 @@ def fine_tuning(filtered_image):
 
     return largest_label_image
 
-def root_only(segmented_image):
+def root_only(segmented_image, scaling_factor):
     temp_ratio = round(find_desired_ratio(segmented_image), 2)
     ratio = scaling_factor*segmented_ratio/temp_ratio
     print(f"Ratio: {ratio}, Open Iterations: {int(5*np.sqrt(ratio))}")
@@ -149,7 +142,17 @@ def roots_hair_density(root_length, hairs_num):
     print(f"Root hairs density: {hairs_num/root_length}")
     return hairs_num/root_length
 
-def Arbidiopsis_active():
+def Arbidiopsis_active(path):
+    image_list = ['arb_bicubic_x2', 'arb_bicubic_x3', 'arb_bicubic_x4', 'arb_bicubic_x8', 'arb_sr_x2', 'arb_sr_x3',
+                  'arb_sr_x4', 'arb_sr_x8']
+
+    # Base Case - LR Image
+    # path = r'/Users/omercohen/PycharmProjects/FinalProject/Arb_Images/'
+    image = image_list[3]
+    color_image = cv2.imread(path + image + '.png')
+    # scale_factor = int(image[-1:])
+    scaling_factor = color_image.shape[0] / 816
+
     # Step 1: Convert into Grayscale
     gray_image = color2gray(color_image)
     plt.figure(image)
@@ -185,7 +188,7 @@ def Arbidiopsis_active():
     plt.axis('off')
 
     # Step 5: Filter the Root Only from the Segmented Image
-    root_only_image = root_only(segmented_image)
+    root_only_image = root_only(segmented_image, scaling_factor)
     # plt.figure('Root Only Image')
     plt.subplot(3, 3, 7)
     plt.imshow(root_only_image, cmap='gray')

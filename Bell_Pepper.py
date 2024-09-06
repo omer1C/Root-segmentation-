@@ -3,15 +3,6 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-path = r'/Users/omercohen/PycharmProjects/FinalProject/Bell_Images/'
-image_list = ['SR_bicubic_p1_x2', 'SR_bicubic_p1_x3', 'SR_bicubic_p1_x4', 'SR_bicubic_p1_x8', 'SR_P1_X2', 'SR_P1_X3',
-              'SR_P1_X4', 'SR_P1_X8']
-# image = 'LR_P1'
-image = image_list[1]
-scale_factor = int(image[-1:])
-color_image = cv2.imread(path + image + '.png')
-# Based on SR_bicubic_p1_x2 image
-scaling_factor = color_image.shape[0] / 438
 # Desired ratio defined to be the background(black)/total pixels in 1st order filter step
 desired_ratio = 0.79
 # Segmented ratio defined to be the segmented image(white)/total pixels
@@ -119,7 +110,7 @@ def fine_tuning(filtered_image):
     return largest_label_image
 
 
-def root_only(segmented_image):
+def root_only(segmented_image, scaling_factor):
     temp_ratio = round(find_desired_ratio(segmented_image), 2)
     ratio = scaling_factor * segmented_ratio / temp_ratio
     print(f"Ratio: {ratio}, Open Iterations: {int(5 * ratio)}")
@@ -205,7 +196,17 @@ def detect_corners_within_hairs(hairs_only):
     cv2.destroyAllWindows()
 
 
-def Bell_Pepper_active():
+def Bell_Pepper_active(path):
+    # path = r'/Users/omercohen/PycharmProjects/FinalProject/Bell_Images/'
+    image_list = ['SR_bicubic_p1_x2', 'SR_bicubic_p1_x3', 'SR_bicubic_p1_x4', 'SR_bicubic_p1_x8', 'SR_P1_X2',
+                  'SR_P1_X3',
+                  'SR_P1_X4', 'SR_P1_X8']
+    # image = 'LR_P1'
+    image = image_list[1]
+    scale_factor = int(image[-1:])
+    color_image = cv2.imread(path + image + '.png')
+    # Based on SR_bicubic_p1_x2 image
+    scaling_factor = color_image.shape[0] / 438
     # Step 1: Convert into Grayscale
     gray_image = color2gray(color_image)
     plt.figure(image)
@@ -248,7 +249,7 @@ def Bell_Pepper_active():
     plt.axis('off')
 
     # Step 6: Filter the Root Only from the Segmented Image
-    root_only_image = root_only(segmented_image)
+    root_only_image = root_only(segmented_image, scaling_factor)
     # plt.figure('Root Only Image')
     plt.subplot(3, 3, 6)
     plt.imshow(root_only_image, cmap='gray')

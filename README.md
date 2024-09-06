@@ -12,6 +12,27 @@ without branches and finally detects and counts root hairs by mapping each root 
 contour. The goal is to achieve over 80% precision in detecting and counting root hairs, where
 super-resolution images expected to outperform non-super-resolution images.
 
+# Example Usage 
+
+## Clone The Repository:
+```
+git clone https://github.com/omer1C/Root-segmentation-.git
+```
+## Requirements 
+To install the requirements please run:
+```
+pip install -r requirements.txt
+```
+## Run The Code
+In order to run the Bell Pepper algorithm please run:
+```
+python3 main.py --plant_type Bell_Pepper --path YOUR_PATH_TO_THE_PROJECT
+```
+
+In order to run the Arbidiopsis algorithm please run:
+```
+python3 main.py --plant_type Arbidiopsis --path YOUR_PATH_TO_THE_PROJECT
+```
 # Project Goals
 
 The project aims to develop a non-invasive method for assessing plant health and nutrient uptake
