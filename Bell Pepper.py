@@ -281,7 +281,7 @@ plt.axis('off')
 plt.tight_layout()
 plt.show()
 
-# # This part is about the fabric images
+# # This part is about the synthetic images
 # true_hairs_number = int(image[14:16])
 # image_number = image[1:2]
 # print(f'Image number {image_number} originally have {true_hairs_number} hairs root and we discover {hairs_num}. Accuracy of {(hairs_num/true_hairs_number)*100}%')

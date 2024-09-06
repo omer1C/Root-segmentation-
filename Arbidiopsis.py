@@ -218,3 +218,5 @@ plt.tight_layout()
 # Save the figure to a file
 # plt.savefig(os.path.join(path, f'{image} processing.png'), dpi=500, bbox_inches='tight')
 plt.show()
+
+#synthetic
