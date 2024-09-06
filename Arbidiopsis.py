@@ -207,11 +207,10 @@ root_length = root_length(root_only)
 density = roots_hair_density(root_length, hairs_num)
 
 # Draw contours on the original image for visualization
-image_with_contours = cv2.cvtColor(color_image, cv2.COLOR_GRAY2BGR)
-cv2.drawContours(image_with_contours, hairs_contours, -1, (0, 255, 0), 2)
+cv2.drawContours(color_image, hairs_contours, -1, (0, 255, 0), 2)
 # plt.figure('Root Hair Contours on The Sharpened Image')
 plt.subplot(3, 3, 9)
-plt.imshow(image_with_contours)
+plt.imshow(cv2.cvtColor(color_image, cv2.COLOR_BGR2RGB))
 plt.title(f'{hairs_num} Root Hair Contours')
 plt.axis('off')
 
