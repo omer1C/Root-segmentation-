@@ -30,7 +30,8 @@ consistently yield higher accuracy scores compared to non-super-resolution image
 To address the challenge of counting root hairs, our approach began by recognizing the importance of preprocessing the image effectively. Starting with segmentation yielded a clear representation of the root in white against a black background. Once we obtained this binary image and understood the root's structure, our next step focused on isolating the branching hairs from the main root. By identifying distinct contours within the segmented image, we aimed to accurately count the individual root hairs.
 
 # Block Diagram 
-<img width="650" alt="image" src="https://github.com/user-attachments/assets/6907dc64-255b-4a51-82fc-084b33fde398">
+<img width="650" alt="image" src="https://github.com/user-attachments/assets/b7dfcd3c-520d-4f71-b202-994067556d72">
+
 
 # Proposed Algorithm:
 ### Original Image : 
