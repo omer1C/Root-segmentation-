@@ -24,14 +24,14 @@ To install the requirements please run:
 pip install -r requirements.txt
 ```
 ## Run The Code
-In order to run the Bell Pepper algorithm please add the path to the project and run:
+In order to run the Bell Pepper algorithm add your save path and run:
 ```
-python3 main.py --plant_type Bell_Pepper --path YOUR_PATH_TO_THE_PROJECT
+python3 main.py --plant_type Bell_Pepper --save_path YOUR_SAVE_PATH
 ```
 
-In order to run the Arbidiopsis algorithm please add the path to the project and run:
+In order to run the Arbidiopsis algorithm add your save path and run:
 ```
-python3 main.py --plant_type Arbidiopsis --path YOUR_PATH_TO_THE_PROJECT
+python3 main.py --plant_type Arbidiopsis --save_path YOUR_SAVE_PATH
 ```
 # Project Goals
 

@@ -142,12 +142,11 @@ def roots_hair_density(root_length, hairs_num):
     print(f"Root hairs density: {hairs_num/root_length}")
     return hairs_num/root_length
 
-def Arbidiopsis_active(path):
+def Arbidiopsis_active(path, save_path):
     image_list = ['arb_bicubic_x2', 'arb_bicubic_x3', 'arb_bicubic_x4', 'arb_bicubic_x8', 'arb_sr_x2', 'arb_sr_x3',
                   'arb_sr_x4', 'arb_sr_x8']
 
     # Base Case - LR Image
-    # path = r'/Users/omercohen/PycharmProjects/FinalProject/Arb_Images/'
     image = image_list[3]
     color_image = cv2.imread(path + image + '.png')
     # scale_factor = int(image[-1:])
@@ -221,4 +220,5 @@ def Arbidiopsis_active(path):
     plt.tight_layout()
     # Save the figure to a file
     # plt.savefig(os.path.join(path, f'{image} processing.png'), dpi=500, bbox_inches='tight')
-    plt.show()
+    plt.savefig(save_path, dpi=300)
+    # plt.show()

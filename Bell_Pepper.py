@@ -196,8 +196,7 @@ def detect_corners_within_hairs(hairs_only):
     cv2.destroyAllWindows()
 
 
-def Bell_Pepper_active(path):
-    # path = r'/Users/omercohen/PycharmProjects/FinalProject/Bell_Images/'
+def Bell_Pepper_active(path, save_path):
     image_list = ['SR_bicubic_p1_x2', 'SR_bicubic_p1_x3', 'SR_bicubic_p1_x4', 'SR_bicubic_p1_x8', 'SR_P1_X2',
                   'SR_P1_X3',
                   'SR_P1_X4', 'SR_P1_X8']
@@ -280,6 +279,6 @@ def Bell_Pepper_active(path):
     plt.axis('off')
 
     plt.tight_layout()
-    plt.show()
-
+    # plt.show()
+    plt.savefig(save_path, dpi=300)
 
