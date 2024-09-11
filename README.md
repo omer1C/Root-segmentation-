@@ -19,6 +19,10 @@ super-resolution images expected to outperform non-super-resolution images.
 git clone https://github.com/omer1C/Root-segmentation-.git
 ```
 ## Requirements 
+Make sure navigate to the Root-segmentation- dir, you can use:
+```
+cd Root-segmentation-/
+```
 To install the requirements please run:
 ```
 pip install -r requirements.txt
